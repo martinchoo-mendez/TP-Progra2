@@ -1,7 +1,8 @@
 package entidades;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -22,11 +23,9 @@ public class HomeSolution implements IHomeSolution{
 
 	@Override
 	public void registrarEmpleado(String nombre, double valor) throws IllegalArgumentException {
-		// Validación 1: Nombre no nulo ni vacío
-	    if (nombre == null || nombre.trim().isEmpty()) {
+		if (nombre == null || nombre.trim().isEmpty()) {
 	        throw new IllegalArgumentException("El nombre del empleado no puede ser nulo o vacío.");
 	    }
-	    // Validación 2: Valor no negativo
 	    if (valor < 0) {
 	        throw new IllegalArgumentException("El valor del empleado no puede ser negativo. Valor proporcionado: " + valor);
 	    }
@@ -36,15 +35,12 @@ public class HomeSolution implements IHomeSolution{
 
 	@Override
 	public void registrarEmpleado(String nombre, double valor, String categoria) throws IllegalArgumentException {
-		// Validación 1: Nombre no nulo ni vacío
-	    if (nombre == null || nombre.trim().isEmpty()) {
+		if (nombre == null || nombre.trim().isEmpty()) {
 	        throw new IllegalArgumentException("El nombre del empleado no puede ser nulo o vacío.");
 	    }
-	    // Validación 2: Valor no negativo
 	    if (valor < 0) {
 	        throw new IllegalArgumentException("El valor del empleado no puede ser negativo. Valor proporcionado: " + valor);
 	    }
-	    categoria = categoria.toUpperCase();
 	    if(!categoria.equals("INICIAL") && !categoria.equals("TECNICO") && !categoria.equals("EXPERTO")) {
 	        throw new IllegalArgumentException("La categoría, tiene que ser Inicial, Técnico o Experto");
 	    }
@@ -55,33 +51,25 @@ public class HomeSolution implements IHomeSolution{
 	@Override
 	public void registrarProyecto(String[] titulos, String[] descripcion, double[] dias, String domicilio,
 			String[] cliente, String inicio, String fin) throws IllegalArgumentException {
-		// Validación 1: Arrays no null y tamaños consistentes
-	    if (titulos == null || descripcion == null || dias == null) {
-	        throw new IllegalArgumentException("Los arrays de títulos, descripciones y días no pueden ser null.");
-	    }
-	    if (titulos.length != descripcion.length || titulos.length != dias.length || titulos.length == 0) {
-	        throw new IllegalArgumentException("Los arrays de títulos, descripciones y días deben tener la misma longitud positiva.");
-	    }
-	    
-	    // Validación 2: Títulos, descripciones y días válidos
+		// Validación 1: Títulos, descripciones y días válidos
 	    for (int i = 0; i < titulos.length; i++) {
 	        if (titulos[i] == null || titulos[i].trim().isEmpty()) {
-	            throw new IllegalArgumentException("El título de la tarea " + (i + 1) + " no puede ser null o vacío.");
+	            throw new IllegalArgumentException("No hay título en la tarea " + (i + 1));
 	        }
 	        if (descripcion[i] == null ) {
-	            throw new IllegalArgumentException("La descripción de la tarea " + (i + 1) + " no puede ser null o vacía.");
+	            throw new IllegalArgumentException("No hay descripción en la tarea " + (i + 1));
 	        }
 	        if (dias[i] <= 0) {
 	            throw new IllegalArgumentException("Los días estimados de la tarea " + (i + 1) + " deben ser un número positivo.");
 	        }
 	    }
-	      
-	    // Validación 3: Domicilio
+	  
+	    //Validación 2 :Domicilio
 	    if (domicilio == null || domicilio.trim().isEmpty()) {
-	        throw new IllegalArgumentException("El domicilio no puede ser null o vacío.");
+	        throw new IllegalArgumentException("Faltó ingresar un domicilio");
 	    }
 	    
-	 // Validación 4: Cliente
+	    // Validación 3: Cliente
 	    if (cliente == null || cliente.length != 3) {
 	        throw new IllegalArgumentException("El cliente debe tener exactamente 3 elementos: nombre, mail, teléfono.");
 	    }
@@ -95,16 +83,16 @@ public class HomeSolution implements IHomeSolution{
 	        throw new IllegalArgumentException("El teléfono del cliente no puede ser null o vacío.");
 	    }
 	    
-	    // Validación 5: Fechas (AAAA-MM-DD es igual a YYYY-MM-DD)
-	    String datePattern = "^\\d{4}-\\d{2}-\\d{2}$";
-	    if (!inicio.matches(datePattern)) {
-	        throw new IllegalArgumentException("La fecha de inicio debe estar en formato AAAA-MM-DD.");
-	    }
-	    if (!fin.matches(datePattern)) {
-	        throw new IllegalArgumentException("La fecha de finalización debe estar en formato AAAA-MM-DD.");
-	    }
-	    if (fin.compareTo(inicio) <= 0) {
-	        throw new IllegalArgumentException("La fecha de finalización debe ser posterior a la fecha de inicio.");
+	    // Validación 4: Fechas (AAAA-MM-DD es igual a YYYY-MM-DD)
+	    try {
+	        LocalDate fechaInicio = LocalDate.parse(inicio); // Formato ISO por defecto: AAAA-MM-DD
+	        LocalDate fechaFin = LocalDate.parse(fin);
+	        
+	        if (!fechaFin.isAfter(fechaInicio)) {
+	            throw new IllegalArgumentException("La fecha de finalización debe ser posterior a la fecha de inicio.");
+	        }
+	    } catch (DateTimeParseException e) {
+	        throw new IllegalArgumentException("Las fechas deben estar en formato AAAA-MM-DD.");
 	    }
 
 		Proyecto proyecto = new Proyecto(titulos, descripcion, dias, domicilio, cliente, inicio, fin);
@@ -140,7 +128,7 @@ public class HomeSolution implements IHomeSolution{
 		proyecto.actualizarEstadoActivo();
 	}
 
-	
+	//función para usar cuando haya que asignar un empleado a una tarea
 	public boolean hayEmpleadoDisponible() {
 		boolean algunEmpleadoDisponible = false;
 		for(Empleado empleado : empleados.values()) {
@@ -149,6 +137,7 @@ public class HomeSolution implements IHomeSolution{
 		return algunEmpleadoDisponible;
 	}
 	
+	//funcion para ver cual es el empleado con menos retraso y poder asignarlo en una tarea
 	public Empleado verEmpleadoConMenosRetraso() {
 		Empleado empleadoConMenosRetraso = null;
 
@@ -186,13 +175,9 @@ public class HomeSolution implements IHomeSolution{
 	public void registrarRetrasoEnTarea(Integer numero, String titulo, double cantidadDias)
 			throws IllegalArgumentException {
 		if (cantidadDias <= 0) {
-	        throw new IllegalArgumentException("La cantidad de días de retraso debe ser positiva. Valor proporcionado: " + cantidadDias);
+	        throw new IllegalArgumentException("La cantidad de días de retraso debe ser positiva.");
 	    }
-		System.out.println("Registrando retrasos en proyecto: " + numero);
 		Proyecto proyecto = proyectos.get(numero);
-		Tarea tarea = proyecto.verTarea(titulo);
-		Empleado empleado = tarea.verResponsable();
-		empleado.aumentarRetrasos(); //empleado necesita registrar cantidad de retrasos, no cantidad de días
 		proyecto.registrarRetrasoEnTarea(titulo, cantidadDias);
 	}
 
@@ -219,29 +204,36 @@ public class HomeSolution implements IHomeSolution{
 
 	@Override
 	public void finalizarProyecto(Integer numero, String fin) throws IllegalArgumentException {
-		// Validación 1: Fecha en formato válido
-	    String datePattern = "^\\d{4}-\\d{2}-\\d{2}$";
-	    if (!fin.matches(datePattern)) {
+	    try {
+	        // Convertir la fecha de finalización a LocalDate (valida formato automáticamente)
+	        LocalDate fechaFin = LocalDate.parse(fin);
+	        
+	        // Obtener el proyecto
+	        Proyecto proyecto = proyectos.get(numero);
+	        
+	        // Convertir las fechas del proyecto a LocalDate
+	        LocalDate fechaInicio = LocalDate.parse(proyecto.fechaDeInicio());
+	        LocalDate fechaFinEstimada = LocalDate.parse(proyecto.fechaDeFinEstimada());
+	        
+	        // Validación 1: Fecha fin NO puede ser anterior a fecha inicio
+	        if (fechaFin.isBefore(fechaInicio)) {
+	            throw new IllegalArgumentException("La fecha de finalización no puede ser anterior a la fecha de inicio (" +fechaInicio + ").");
+	        }
+	        
+	        // Validación 2: Fecha fin NO puede ser anterior a fecha fin estimada
+	        if (fechaFin.isBefore(fechaFinEstimada)) {
+	            throw new IllegalArgumentException("La fecha de finalización real (" + fechaFin + ") no puede ser anterior a la fecha de fin estimada (" +fechaFinEstimada + ").");
+	        }
+	        
+	        // Si todo está correcto, actualizar el proyecto
+	        proyecto.fechaDeFin(fin);
+	        proyecto.calcularCostoFinal();
+	        proyecto.ActualizarEstadoFIn();
+	        proyecto.liberarEmpleados();
+	        
+	    } catch (DateTimeParseException e) {
 	        throw new IllegalArgumentException("La fecha de finalización debe estar en formato YYYY-MM-DD.");
 	    }
-	    
-	    // Validación 2: Fecha fin posterior a fecha inicio
-	    Proyecto proyecto = proyectos.get(numero);
-	    String fechaInicio = proyecto.fechaDeInicio();
-	    if (fin.compareTo(fechaInicio) < 0) {
-	        throw new IllegalArgumentException("La fecha de finalización no puede ser anterior a la fecha de inicio (" + fechaInicio + ").");
-	    }
-	    String fechaFinEstimada = proyecto.fechaDeFinEstimada(); // Asumo este getter existe en Proyecto
-	    
-	    if (fin.compareTo(fechaFinEstimada) < 0) {
-	        throw new IllegalArgumentException("La fecha de finalización real (" + fin + 
-	                                           ") no puede ser anterior a la fecha de fin estimada (" + fechaFinEstimada + ").");
-	    }
-	    proyecto.fechaDeFin(fin);
-//	    proyecto.calcularCostoFinal();
-	    proyecto.calcularCostoFinal();
-	    proyecto.ActualizarEstadoFIn();
-	    proyecto.liberarEmpleados();
 	}
 
 	@Override
@@ -278,7 +270,6 @@ public class HomeSolution implements IHomeSolution{
 	public double costoProyecto(Integer numero) {
 	    double costo = 0;
 	    Proyecto proyecto = proyectos.get(numero);
-	    System.out.println("Calculando costo para proyecto: " + numero);
 	   if (proyecto.verEstado().equals("ACTIVO") || proyecto.verEstado().equals("PENDIENTE")) {
 	    	proyecto.calcularCostoParcial();
 	    	costo = proyecto.verCostoParcial();
@@ -286,8 +277,7 @@ public class HomeSolution implements IHomeSolution{
 	    else if (proyecto.verEstado().equals("FINALIZADO")) {
 	       costo = proyecto.verCostoFinal();
 	    }
-	  //  System.out.println("Costo del proyecto " + "con estado " + proyecto.verEstado() + " es: " + costo);
-	    return costo;
+	   return costo;
 	}
 
 	@Override
@@ -304,25 +294,15 @@ public class HomeSolution implements IHomeSolution{
 
 	@Override
 	public List<Tupla<Integer, String>> proyectosPendientes() {
-	    List<Proyecto> pendientes = new ArrayList<>();
-	    
-	    // Filtrar proyectos pendientes
-	    for (Proyecto p : proyectos.values()) {
-	        if (p.verEstado().equals("PENDIENTE")) {
-	            pendientes.add(p);
+	    List<Tupla<Integer, String>> pendientes = new ArrayList<>();
+	    for (Proyecto proyecto : proyectos.values()) {
+	        if (proyecto.verEstado().equals("PENDIENTE")) {
+	        	Tupla<Integer, String> tupla = new Tupla <Integer, String> (proyecto.verId(), proyecto.verDireccion());
+	            pendientes.add(tupla);
 	        }
 	    }
 	    
-	    // Ordenar por número de proyecto ascendente
-	    pendientes.sort(Comparator.comparingInt(Proyecto::verId));
-	    
-	    // Convertir a lista de Tupla<Integer, String>
-	    List<Tupla<Integer, String>> resultado = new ArrayList<>();
-	    for (Proyecto p : pendientes) {
-	        resultado.add(new Tupla<>(p.verId(), p.verDireccion()));
-	    }
-	    
-	    return resultado;
+	    return pendientes;
 	}
 	
 	@Override

@@ -27,35 +27,19 @@ public class Tarea {
 	}
 	
 	public void cambiarResponsable(Empleado nuevoEmpleado) {
-	    responsable.cambiarEstado();  // Libera al antiguo
-	    nuevoEmpleado.cambiarEstado(); // Ocupa al nuevo
-	    responsable = nuevoEmpleado;   // Cambia la referencia
-	    costo = 0;  // AGREGAR ESTA LÍNEA - resetea el costo para que se recalcule
-	}
-	
-	public double verCosto() {
-		return costo;
-	}
-	
-	
-	public double calcularCosto() {
-		costo = responsable.calcularCosto(diasNecesarios);
-		return costo;
-	}
-	
-	public boolean hayEmpleado() {
-		return responsable != null;
+	    responsable.cambiarEstado();  
+	    nuevoEmpleado.cambiarEstado();
+	    responsable = nuevoEmpleado;  
+	    costo = 0;
 	}
 	
 	public void aumentarCantidadDeRetrasos(double diasRetrasados) {
 		cantidadRetrasos += diasRetrasados;
 		tuvoRetraso = true;
-	//	System.out.println(">> Se registraron " + diasRetrasados + " días de retraso. Total ahora: " + cantidadRetrasos);
 	}
 	
-	//solo método de prueba para ver si registra los retrasos
-	public double cantidadDeRetrasos() {
-		return cantidadRetrasos;
+	public void aumentarCantidadDeRetrasosDelEmpleado() {
+		responsable.aumentarRetrasos();
 	}
 	
 	public void cambiarFinalizado() {
@@ -66,38 +50,48 @@ public class Tarea {
 		}
 	}
 	
-	public boolean verDiasCompletos() {
-		return true;
-	}
-	
 	public void liberarResponsable() {
 		 if (responsable != null) {
-		       responsable.cambiarEstado();  // Cambia estado del empleado a disponible
-		       responsable = null;  // Libera la referencia al empleado
+		       responsable.cambiarEstado();  
+		       responsable = null;
 		  }
+	}
+	
+	public void calcularCosto() {
+		costo = responsable.calcularCosto(diasNecesarios);
+	}
+	
+	public boolean hayEmpleado() {
+		return responsable != null;
+	}
+	
+	public boolean verDiasCompletos() {
+		return true;
 	}
 
 	public boolean verTuvoRetraso() {
 		return tuvoRetraso;
 	}
 	
-	public String verTitulo() {
-		return titulo;
+	public boolean verFin() {
+		return finalizado;
 	}
 	
 	public Empleado verResponsable() {
 		return responsable;
 	}
 	
-	public boolean verFin() {
-		return finalizado;
+	public double verCosto() {
+		return costo;
 	}
 
+	public String verTitulo() {
+		return titulo;
+	}
+	
 	@Override
 	public String toString() {
 		return titulo;
 	}
-	
-	
 	
 }

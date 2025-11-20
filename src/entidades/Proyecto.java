@@ -3,6 +3,7 @@ package entidades;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,7 +38,7 @@ public class Proyecto {
 		this.costoFinal = 0;
 		this.costoParcial = 0;
 		incrementarUltimo();
-		this.asignarTarea(); // Agrega esto para poblar el conjunto de tareas
+		asignarTarea(); // Agrega esto para poblar el conjunto de tareas
 	}
 	
 	public static void resetearUltimo() {
@@ -55,11 +56,6 @@ public class Proyecto {
 		}
 	}
 	
-	public String verEstado() {
-		return estado;
-	}
-	
-	
 	public void actualizarEstadoActivo() {
 		estado = Estado.activo;
 	}
@@ -68,19 +64,16 @@ public class Proyecto {
 		estado = Estado.finalizado;
 	}
 	
-	public boolean algunaTareaConRetraso() {
-		boolean algunaTarea = false;
-		for(Tarea tarea: tareas.values()) {
-			algunaTarea = algunaTarea || tarea.verTuvoRetraso();
-		}
-		return algunaTarea;
+	public void fechaDeFin (String fin) {
+		this.fechaFinalizacion = fin; 
 	}
 	
 	public void calcularCostoParcial() {
 	    costoParcial = 0;
 	    for (Tarea tarea: tareas.values()) {
 	        if(tarea.hayEmpleado()) {
-	            double costoTarea = tarea.calcularCosto();
+	        	tarea.calcularCosto();
+	            double costoTarea = tarea.verCosto();
 	            // Agregar bono del 2% si es EmpleadoPlanta sin retraso
 	            if (tarea.verResponsable() instanceof EmpleadoPlanta && !tarea.verTuvoRetraso()) {
 	                costoTarea *= 1.02;
@@ -97,16 +90,12 @@ public class Proyecto {
 	    }
 	}
 	
-	public double verCostoParcial() {
-		return costoParcial;
-	}
-	
 	public void calcularCostoFinal() {
 	    costoFinal = 0;
 	    for (Tarea tarea: tareas.values()) {
 	        if(tarea.hayEmpleado()) {
-	            double costoTarea = tarea.calcularCosto();
-	            // Agregar bono del 2% si es EmpleadoPlanta sin retraso
+	        	tarea.calcularCosto();
+	            double costoTarea = tarea.verCosto();
 	            if (tarea.verResponsable() instanceof EmpleadoPlanta && !tarea.verTuvoRetraso()) {
 	                costoTarea *= 1.02;
 	            }
@@ -121,30 +110,37 @@ public class Proyecto {
 	        costoFinal *= 1.35;
 	    }
 	}
-	
-	public double verCostoFinal() {
-		return costoFinal;
-	}
-	
+		
 	public void asignarEmpleadoEnTarea(Empleado empleado, String tituloDeTarea) {
-		for(Tarea tarea : tareas.values()) {
-			if(tituloDeTarea.equals(tarea.verTitulo())) {
-				tarea.asignarResponsable(empleado);
-			}
-		}
+		Tarea tarea = tareas.get(tituloDeTarea);
+		tarea.asignarResponsable(empleado);
 	}
 	
 	public void registrarRetrasoEnTarea(String titulo, double cantidadDias) {
 		Tarea tarea = tareas.get(titulo);
 		tarea.aumentarCantidadDeRetrasos(cantidadDias);
+		tarea.aumentarCantidadDeRetrasosDelEmpleado();
 	}
 	
-	public String verDireccion() {
-		return direccion;
+	public void agregarTareasProyectoExistente(String titulo, String descripcion, double dias) {
+		Tarea nuevaTarea = new Tarea (titulo, descripcion, dias);
+		tareas.put(titulo, nuevaTarea);
 	}
 	
-	public int verId() {
-		return numeroId;
+	public void liberarEmpleados() {
+	    for (Tarea tarea : tareas.values()) {
+	        if (tarea.verResponsable() != null) { 
+	           tarea.liberarResponsable(); 
+	        }
+	    }
+	}
+	
+	public boolean algunaTareaConRetraso() {
+		boolean algunaTarea = false;
+		for(Tarea tarea: tareas.values()) {
+			algunaTarea = algunaTarea || tarea.verTuvoRetraso();
+		}
+		return algunaTarea;
 	}
 	
 	public boolean existeTarea(String titulo) {
@@ -153,42 +149,6 @@ public class Proyecto {
 			existe = existe || tarea.verTitulo().equals(titulo);
 		}
 		return existe;
-	}
-	
-	public Tarea verTarea (String titulo) {
-		Tarea tareaADevolver = null;
-		for(Tarea tarea: tareas.values()) {
-			if(tarea.verTitulo().equals(titulo)) {
-				tareaADevolver = tarea; 
-			}
-		}
-		return tareaADevolver;
-	}
-	
-	public Set<Tarea> verTareas() {
-		return (Set<Tarea>) tareas.values();
-	}
-	
-	public void agregarTareasProyectoExistente(String titulo, String descripcion, double dias) {
-		Tarea nuevaTarea = new Tarea (titulo, descripcion, dias);
-		tareas.put(titulo, nuevaTarea);
-	}
-	
-	public void fechaDeFin (String fin) {
-		this.fechaFinalizacion = fin; 
-	}
-	
-	public String fechaDeInicio() {
-		return fechaInicio;
-	}
-	
-	public void liberarEmpleados() {
-	    for (Tarea tarea : tareas.values()) {
-	        if (tarea.verResponsable() != null) {  // Asumiendo que verResponsable() devuelve el Empleado
-	            //tarea.verResponsable().cambiarEstado();  // Cambia estado del empleado a disponible
-	            tarea.liberarResponsable();  // Asumiendo que Tarea tiene este método para setear empleado a null
-	        }
-	    }
 	}
 	
 	public List<Tupla<Integer, String>> empleadosDelProyecto(){
@@ -213,16 +173,76 @@ public class Proyecto {
 		return tareasSinResponsable.toArray();
 	}
 	
+	public Set<Tarea> verTareas() {
+		Set <Tarea> tareaDeProyecto= new HashSet <>();
+		for(Tarea tarea: tareas.values()) {
+			tareaDeProyecto.add(tarea);
+		}
+		return tareaDeProyecto;
+	}
+	
+	public Tarea verTarea (String titulo) {
+		Tarea tarea = tareas.get(titulo);
+		return tarea;
+	}
+	
 	public String fechaDeFinEstimada() {
 		return fechaEstimada;
 	}
+	
+	public String verEstado() {
+		return estado;
+	}
+	
+	public String verDireccion() {
+		return direccion;
+	}
+	
+	public String fechaDeInicio() {
+		return fechaInicio;
+	}
+	
+	public double verCostoParcial() {
+		return costoParcial;
+	}
+	
+	public double verCostoFinal() {
+		return costoFinal;
+	}
+	
+	public int verId() {
+		return numeroId;
+	}
+
 
 	@Override
 	public String toString() {
-		return "Proyecto [cliente=" + Arrays.toString(cliente) + ", titulosDeTareas=" + Arrays.toString(titulosDeTareas)
-				+ ", descripcion=" + Arrays.toString(descripcion) + ", dias=" + Arrays.toString(dias) + ", tareas="
-				+ tareas + ", numeroId=" + numeroId + ", direccion=" + direccion + ", fechaInicio=" + fechaInicio
-				+ ", fechaEstimada=" + fechaEstimada + ", fechaFinalizacion=" + fechaFinalizacion + ", estado=" + estado
-				+ ", costoFinal=" + costoFinal + "]";
-	}	
+	    StringBuilder datos = new StringBuilder();
+	    datos.append("Proyecto [cliente=");
+	    datos.append(Arrays.toString(cliente));
+	    datos.append(", titulosDeTareas=");
+	    datos.append(Arrays.toString(titulosDeTareas));
+	    datos.append(", descripcion=");
+	    datos.append(Arrays.toString(descripcion));
+	    datos.append(", dias=");
+	    datos.append(Arrays.toString(dias));
+	    datos.append(", tareas=");
+	    datos.append(tareas);
+	    datos.append(", numeroId=");
+	    datos.append(numeroId);
+	    datos.append(", direccion=");
+	    datos.append(direccion);
+	    datos.append(", fechaInicio=");
+	    datos.append(fechaInicio);
+	    datos.append(", fechaEstimada=");
+	    datos.append(fechaEstimada);
+	    datos.append(", fechaFinalizacion=");
+	    datos.append(fechaFinalizacion);
+	    datos.append(", estado=");
+	    datos.append(estado);
+	    datos.append(", costoFinal=");
+	    datos.append(costoFinal);
+	    datos.append("]");
+	    return datos.toString();
+	}
 }

@@ -10,9 +10,9 @@ public abstract class Empleado {
 	private ArrayList <Tarea> historialDeTareas;
 	private static int ultimo = 100;
 	
-	public Empleado( String nombre) { //el constructor lleva el nombre de la clase, no crearClase, es decir, en este caso, no se tiene que llamar crearEmpleado, se tiene que llamar Empleado, y sin poner el void. Porque sino, no es un constructor, y no se puede heredar
+	public Empleado( String nombre) {
 		this.nombre = nombre;
-		this.legajo = ultimo;  //el legajo no lo puede poner el usuario, sino, el sistema para que este sea único siempre
+		this.legajo = ultimo;  
 		this.disponible = true;
 		this.cumuloDeRetrasos = 0;
 		this.historialDeTareas = new ArrayList<>();
@@ -27,10 +27,6 @@ public abstract class Empleado {
 		ultimo++;
 	}
 	
-	public boolean verDisponible() {
-		return disponible;
-	}
-	
 	public void cambiarEstado() {
 	    this.disponible = !this.disponible;
 	}
@@ -39,31 +35,20 @@ public abstract class Empleado {
 		cumuloDeRetrasos++;
 	}
 	
-	public int mostrarRetrasos() {
-		return cumuloDeRetrasos;
+	public void agregarTareaHistorial (Tarea tarea) {
+		historialDeTareas.add(tarea);
 	}
 	
-	public abstract double calcularCosto(double diasNecesarios);
 	
 	public boolean tuvoTareasConRetrasos() {
 		boolean tareasConRetraso = false;
 		for(Tarea tarea : historialDeTareas) {
-			tareasConRetraso = tareasConRetraso || tarea.verTuvoRetraso(); //falta agregar tuvoRetraso en Tarea
+			tareasConRetraso = tareasConRetraso || tarea.verTuvoRetraso();
 		}
 		return tareasConRetraso;
 	}
 	
-	public int verLegajo() {
-		return legajo;
-	}
-	
-	public String verNombre() {
-		return nombre;
-	}
-	
-	public void agregarTareaHistorial (Tarea tarea) {
-		historialDeTareas.add(tarea);
-	}
+	public abstract double calcularCosto(double diasNecesarios);
 	
 	public boolean tuvoTareas() {
 		if(historialDeTareas.size()>0) {
@@ -71,11 +56,38 @@ public abstract class Empleado {
 		}
 		return false;
 	}
+	
+	public boolean verDisponible() {
+		return disponible;
+	}
+	
+	public String verNombre() {
+		return nombre;
+	}
+	
+	public int mostrarRetrasos() {
+		return cumuloDeRetrasos;
+	}
+	
+	public int verLegajo() {
+		return legajo;
+	}
 
 	@Override
 	public String toString() {
-		return "Empleado [nombre=" + nombre + ", legajo=" + legajo + ", disponible=" + disponible
-				+ ", cumuloDeRetrasos=" + cumuloDeRetrasos + ", historialDeTareas=" + historialDeTareas + "]";
+	    StringBuilder datos = new StringBuilder();
+	    datos.append("Empleado [nombre=");
+	    datos.append(nombre);
+	    datos.append(", legajo=");
+	    datos.append(legajo);
+	    datos.append(", disponible=");
+	    datos.append(disponible);
+	    datos.append(", cumuloDeRetrasos=");
+	    datos.append(cumuloDeRetrasos);
+	    datos.append(", historialDeTareas=");
+	    datos.append(historialDeTareas);
+	    datos.append("]");
+	    return datos.toString();
 	}
 	
 }
