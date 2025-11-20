@@ -211,7 +211,6 @@ public class HomeSolutionTest {
     public void testCalculaCostoConRetrasosCorrectamente() throws Exception{
         Integer numeroProyecto = (homeSolution.proyectosPendientes().get(0)).getValor1();
         asignarTareas(numeroProyecto);
-        
         homeSolution.finalizarProyecto(numeroProyecto,"2025-12-10");
         assertEquals(calculoCostoConRetraso(), homeSolution.costoProyecto(numeroProyecto), 0.001);
     }

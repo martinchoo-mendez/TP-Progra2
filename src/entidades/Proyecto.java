@@ -23,6 +23,7 @@ public class Proyecto {
 	private double costoFinal;
 	private double costoParcial;
 	private static int ultimo = 1000;
+	private boolean tuvoRetraso;
 	
 	public Proyecto(String[] titulos, String[] descripcion, double[] dias, String domicilio, String[] cliente, String inicio, String fin) {
 		this.tareas = new HashMap<String, Tarea>();
@@ -37,6 +38,7 @@ public class Proyecto {
 		this.estado = Estado.pendiente;
 		this.costoFinal = 0;
 		this.costoParcial = 0;
+		this.tuvoRetraso = false;
 		incrementarUltimo();
 		asignarTarea(); // Agrega esto para poblar el conjunto de tareas
 	}
@@ -94,16 +96,17 @@ public class Proyecto {
 	    costoFinal = 0;
 	    for (Tarea tarea: tareas.values()) {
 	        if(tarea.hayEmpleado()) {
-	        	tarea.calcularCosto();
+	            tarea.calcularCosto();
 	            double costoTarea = tarea.verCosto();
-	            if (tarea.verResponsable() instanceof EmpleadoPlanta && !tarea.verTuvoRetraso()) {
+	            // Bono del 2% SIEMPRE para EmpleadoPlanta en costo final
+	            if (tarea.verResponsable() instanceof EmpleadoPlanta) {
 	                costoTarea *= 1.02;
 	            }
 	            costoFinal += costoTarea;
 	        }
 	    }
 	    
-	    if(algunaTareaConRetraso()) {
+	    if(tuvoRetraso) {
 	        costoFinal *= 1.25;
 	    }
 	    else {
@@ -135,20 +138,16 @@ public class Proyecto {
 	    }
 	}
 	
+	public void cambiarTuvoRetraso() {
+		tuvoRetraso = true;
+	}
+	
 	public boolean algunaTareaConRetraso() {
 		boolean algunaTarea = false;
 		for(Tarea tarea: tareas.values()) {
 			algunaTarea = algunaTarea || tarea.verTuvoRetraso();
 		}
 		return algunaTarea;
-	}
-	
-	public boolean existeTarea(String titulo) {
-		boolean existe = false;
-		for(Tarea tarea : tareas.values()) {
-			existe = existe || tarea.verTitulo().equals(titulo);
-		}
-		return existe;
 	}
 	
 	public List<Tupla<Integer, String>> empleadosDelProyecto(){

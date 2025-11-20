@@ -225,6 +225,10 @@ public class HomeSolution implements IHomeSolution{
 	            throw new IllegalArgumentException("La fecha de finalización real (" + fechaFin + ") no puede ser anterior a la fecha de fin estimada (" +fechaFinEstimada + ").");
 	        }
 	        
+	        if(fechaFin.isAfter(fechaFinEstimada)) {
+	        	proyecto.cambiarTuvoRetraso();
+	        }
+	        
 	        // Si todo está correcto, actualizar el proyecto
 	        proyecto.fechaDeFin(fin);
 	        proyecto.calcularCostoFinal();
