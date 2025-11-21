@@ -34,6 +34,7 @@ public class Proyecto {
 		this.cliente = cliente;
 		this.fechaInicio = inicio;
 		this.fechaEstimada = fin;
+		this.fechaFinalizacion = fin;
 		this.numeroId = ultimo;
 		this.estado = Estado.pendiente;
 		this.costoFinal = 0;
@@ -67,7 +68,7 @@ public class Proyecto {
 	}
 	
 	public void fechaDeFin (String fin) {
-		this.fechaFinalizacion = fin; 
+		fechaFinalizacion = fin; 
 	}
 	
 	public void calcularCostoParcial() {
@@ -125,7 +126,7 @@ public class Proyecto {
 		tarea.aumentarCantidadDeRetrasosDelEmpleado();
 	}
 	
-	public void agregarTareasProyectoExistente(String titulo, String descripcion, double dias) {
+	public void agregarTareasProyecto(String titulo, String descripcion, double dias) {
 		Tarea nuevaTarea = new Tarea (titulo, descripcion, dias);
 		tareas.put(titulo, nuevaTarea);
 	}
@@ -212,36 +213,32 @@ public class Proyecto {
 	public int verId() {
 		return numeroId;
 	}
+	
+	public String verEstadoRetraso() {
+		String estado = new String();
+		if(tuvoRetraso) {
+			estado = "Tuvo retraso";
+		}
+		else {
+			estado = "No tuvo retraso";
+		}
+		return estado;
+	}
 
 
 	@Override
 	public String toString() {
 	    StringBuilder datos = new StringBuilder();
-	    datos.append("Proyecto [cliente=");
-	    datos.append(Arrays.toString(cliente));
-	    datos.append(", titulosDeTareas=");
-	    datos.append(Arrays.toString(titulosDeTareas));
-	    datos.append(", descripcion=");
-	    datos.append(Arrays.toString(descripcion));
-	    datos.append(", dias=");
-	    datos.append(Arrays.toString(dias));
-	    datos.append(", tareas=");
-	    datos.append(tareas);
-	    datos.append(", numeroId=");
+	    datos.append("Proyecto [Número ID=");
 	    datos.append(numeroId);
 	    datos.append(", direccion=");
 	    datos.append(direccion);
-	    datos.append(", fechaInicio=");
-	    datos.append(fechaInicio);
-	    datos.append(", fechaEstimada=");
-	    datos.append(fechaEstimada);
-	    datos.append(", fechaFinalizacion=");
+	    datos.append(Arrays.toString(cliente));
+	    datos.append(", titulosDeTareas=");
 	    datos.append(fechaFinalizacion);
-	    datos.append(", estado=");
-	    datos.append(estado);
-	    datos.append(", costoFinal=");
+	    datos.append(", costo Final =");
 	    datos.append(costoFinal);
-	    datos.append("]");
+	    datos.append(verEstadoRetraso());
 	    return datos.toString();
 	}
 }

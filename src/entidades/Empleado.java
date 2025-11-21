@@ -76,7 +76,7 @@ public abstract class Empleado {
 	@Override
 	public String toString() {
 	    StringBuilder datos = new StringBuilder();
-	    datos.append("Empleado [nombre=");
+	    datos.append("Empleado = [nombre=");
 	    datos.append(nombre);
 	    datos.append(", legajo=");
 	    datos.append(legajo);
@@ -86,7 +86,6 @@ public abstract class Empleado {
 	    datos.append(cumuloDeRetrasos);
 	    datos.append(", historialDeTareas=");
 	    datos.append(historialDeTareas);
-	    datos.append("]");
 	    return datos.toString();
 	}
 	

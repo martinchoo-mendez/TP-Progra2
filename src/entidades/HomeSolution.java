@@ -188,7 +188,7 @@ public class HomeSolution implements IHomeSolution{
 		if(proyecto.verEstado().equals("FINALIZADO")) {
 			throw new IllegalArgumentException ("El proyecto está finalizado");
 		}
-		proyecto.agregarTareasProyectoExistente(titulo, descripcion, dias);
+		proyecto.agregarTareasProyecto(titulo, descripcion, dias);
 	}
 
 	@Override
@@ -404,7 +404,15 @@ public class HomeSolution implements IHomeSolution{
 
 	@Override
 	public String toString() {
-		return "HomeSolution [empleados=" + empleados + ", proyectos=" + proyectos + "]";
+		StringBuilder sb = new StringBuilder();
+		for(Proyecto proyecto: proyectos.values()) {
+			sb.append(proyecto.toString());
+		}
+		sb.append("\n");
+		for(Empleado empleado: empleados.values()) {
+			sb.append(empleado.toString());
+		}
+		return sb.toString();
 	}
 	
 }

@@ -10,7 +10,8 @@ public class EmpleadoPlanta extends Empleado {
 		this.valorDia = valor;
 		this.categoria = categoria;
 	}
-	
+
+	@Override
 	public double calcularCosto(double diasNecesarios) {
 	    double costo = 0;
 	    if (diasNecesarios == 0.5) {
@@ -20,6 +21,16 @@ public class EmpleadoPlanta extends Empleado {
 	    }
 	    return costo;
 	}
-	
+
+	@Override
+	public String toString() {
+		StringBuilder datos = new StringBuilder();
+		datos.append(super.toString());
+		datos.append("Valor por día = ");
+		datos.append(valorDia);
+		datos.append("Categoría = ");
+		datos.append(categoria);
+		return datos.toString();
+	}	
 	
 }

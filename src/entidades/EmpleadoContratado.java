@@ -8,16 +8,28 @@ public class EmpleadoContratado extends Empleado {
 		super(nombre); 
 		this.valorHora = valor;
 	}
-	
+
+	@Override
 	public double calcularCosto(double diasNecesarios) {
-		double costo = 0;
-		if(diasNecesarios == .5) {
-			costo = valorHora * 4;
-		}
-		else {
-			costo = valorHora * 8 * diasNecesarios;
-		}
-		return costo;
+			double costo = 0;
+			if(diasNecesarios == .5) {
+				costo = valorHora * 4;
+			}
+			else {
+				costo = valorHora * 8 * diasNecesarios;
+			}
+			return costo;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder datos = new StringBuilder();
+		datos.append(super.toString());
+		datos.append(", Valor por hora = ");
+		datos.append(valorHora);
+		datos.append("]");
+		return datos.toString();
+	}
+	
 	
 }
