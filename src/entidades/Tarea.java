@@ -29,8 +29,7 @@ public class Tarea {
 	public void cambiarResponsable(Empleado nuevoEmpleado) {
 	    responsable.cambiarEstado();  
 	    nuevoEmpleado.cambiarEstado();
-	    responsable = nuevoEmpleado;  
-	    costo = 0;
+	    responsable = nuevoEmpleado;
 	}
 	
 	public void aumentarCantidadDeRetrasos(double diasRetrasados) {
@@ -63,10 +62,6 @@ public class Tarea {
 	
 	public boolean hayEmpleado() {
 		return responsable != null;
-	}
-	
-	public boolean verDiasCompletos() {
-		return true;
 	}
 
 	public boolean verTuvoRetraso() {

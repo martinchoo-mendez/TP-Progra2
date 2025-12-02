@@ -129,7 +129,7 @@ public class HomeSolution implements IHomeSolution{
 	}
 
 	//función para usar cuando haya que asignar un empleado a una tarea
-	public boolean hayEmpleadoDisponible() {
+	private boolean hayEmpleadoDisponible() {
 		boolean algunEmpleadoDisponible = false;
 		for(Empleado empleado : empleados.values()) {
 			algunEmpleadoDisponible = algunEmpleadoDisponible || empleado.verDisponible(); 
@@ -138,7 +138,7 @@ public class HomeSolution implements IHomeSolution{
 	}
 	
 	//funcion para ver cual es el empleado con menos retraso y poder asignarlo en una tarea
-	public Empleado verEmpleadoConMenosRetraso() {
+	private Empleado verEmpleadoConMenosRetraso() {
 		Empleado empleadoConMenosRetraso = null;
 
 	    for (Empleado empleado : empleados.values()) {
@@ -205,13 +205,10 @@ public class HomeSolution implements IHomeSolution{
 	@Override
 	public void finalizarProyecto(Integer numero, String fin) throws IllegalArgumentException {
 	    try {
-	        // Convertir la fecha de finalización a LocalDate (valida formato automáticamente)
 	        LocalDate fechaFin = LocalDate.parse(fin);
 	        
-	        // Obtener el proyecto
 	        Proyecto proyecto = proyectos.get(numero);
 	        
-	        // Convertir las fechas del proyecto a LocalDate
 	        LocalDate fechaInicio = LocalDate.parse(proyecto.fechaDeInicio());
 	        LocalDate fechaFinEstimada = LocalDate.parse(proyecto.fechaDeFinEstimada());
 	        
@@ -229,7 +226,6 @@ public class HomeSolution implements IHomeSolution{
 	        	proyecto.cambiarTuvoRetraso();
 	        }
 	        
-	        // Si todo está correcto, actualizar el proyecto
 	        proyecto.fechaDeFin(fin);
 	        proyecto.calcularCostoFinal();
 	        proyecto.ActualizarEstadoFIn();
@@ -242,24 +238,21 @@ public class HomeSolution implements IHomeSolution{
 
 	@Override
 	public void reasignarEmpleadoEnProyecto(Integer numero, Integer legajo, String titulo) throws Exception {
-		if(!hayEmpleadoDisponible()) {
-			throw new Exception ("No hay empleado disponible");
+		Empleado nuevoEmpleado = empleados.get(legajo);
+		if(!nuevoEmpleado.verDisponible()) {
+			throw new Exception ("El empleado no está disponible");
 		}
 		Proyecto proyecto = proyectos.get(numero);
 		Tarea tarea = proyecto.verTarea(titulo);
 		if(!tarea.hayEmpleado()) {
 			throw new Exception ("La tarea no tiene empleado");
 		}
-		Empleado nuevoEmpleado = empleados.get(legajo);
 		tarea.cambiarResponsable(nuevoEmpleado);
 		nuevoEmpleado.agregarTareaHistorial(tarea);
 	}
 
 	@Override
 	public void reasignarEmpleadoConMenosRetraso(Integer numero, String titulo) throws Exception {
-		if(!hayEmpleadoDisponible()) {
-			throw new Exception ("No hay empleado disponible");
-		}
 		Proyecto proyecto = proyectos.get(numero);
 		Tarea tarea = proyecto.verTarea(titulo);
 		if(!tarea.hayEmpleado()) {
@@ -267,7 +260,7 @@ public class HomeSolution implements IHomeSolution{
 		}
 		Empleado empleadoConMenosRetraso = verEmpleadoConMenosRetraso();
 		tarea.cambiarResponsable(empleadoConMenosRetraso);
-		empleadoConMenosRetraso.agregarTareaHistorial(tarea);  // AGREGAR ESTA LÍNEA
+		empleadoConMenosRetraso.agregarTareaHistorial(tarea);
 	}
 
 	@Override

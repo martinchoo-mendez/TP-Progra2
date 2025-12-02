@@ -6,7 +6,7 @@ public abstract class Empleado {
 	private String nombre;
 	private Integer legajo;
 	private boolean disponible;
-	private int cumuloDeRetrasos;
+	private Integer cumuloDeRetrasos;
 	private ArrayList <Tarea> historialDeTareas;
 	private static int ultimo = 100;
 	
@@ -50,13 +50,6 @@ public abstract class Empleado {
 	
 	public abstract double calcularCosto(double diasNecesarios);
 	
-	public boolean tuvoTareas() {
-		if(historialDeTareas.size()>0) {
-			return true;
-		}
-		return false;
-	}
-	
 	public boolean verDisponible() {
 		return disponible;
 	}
@@ -65,7 +58,7 @@ public abstract class Empleado {
 		return nombre;
 	}
 	
-	public int mostrarRetrasos() {
+	public Integer mostrarRetrasos() {
 		return cumuloDeRetrasos;
 	}
 	

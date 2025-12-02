@@ -13,11 +13,12 @@ public class EmpleadoPlanta extends Empleado {
 
 	@Override
 	public double calcularCosto(double diasNecesarios) {
+		double bono = 1.02; //agregado ahora
 	    double costo = 0;
 	    if (diasNecesarios == 0.5) {
-	        costo = valorDia * 1; 
+	        costo = valorDia * bono;; 
 	    } else {
-	        costo = valorDia * diasNecesarios;
+	        costo = valorDia * diasNecesarios * 1.02;
 	    }
 	    return costo;
 	}

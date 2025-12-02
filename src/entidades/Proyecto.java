@@ -13,7 +13,7 @@ public class Proyecto {
 	private String [] titulosDeTareas;
 	private String [] descripcion;
 	private double [] dias;
-	private Map <String, Tarea> tareas; //consultar si se puede con esto o hay que hacer un conjunto
+	private Map <String, Tarea> tareas;
 	private Integer numeroId;
 	private String direccion;
 	private String fechaInicio;
@@ -41,7 +41,7 @@ public class Proyecto {
 		this.costoParcial = 0;
 		this.tuvoRetraso = false;
 		incrementarUltimo();
-		asignarTarea(); // Agrega esto para poblar el conjunto de tareas
+		asignarTarea(); 
 	}
 	
 	public static void resetearUltimo() {
@@ -77,10 +77,6 @@ public class Proyecto {
 	        if(tarea.hayEmpleado()) {
 	        	tarea.calcularCosto();
 	            double costoTarea = tarea.verCosto();
-	            // Agregar bono del 2% si es EmpleadoPlanta sin retraso
-	            if (tarea.verResponsable() instanceof EmpleadoPlanta && !tarea.verTuvoRetraso()) {
-	                costoTarea *= 1.02;
-	            }
 	            costoParcial += costoTarea;
 	        }
 	    }
@@ -99,10 +95,6 @@ public class Proyecto {
 	        if(tarea.hayEmpleado()) {
 	            tarea.calcularCosto();
 	            double costoTarea = tarea.verCosto();
-	            // Bono del 2% SIEMPRE para EmpleadoPlanta en costo final
-	            if (tarea.verResponsable() instanceof EmpleadoPlanta) {
-	                costoTarea *= 1.02;
-	            }
 	            costoFinal += costoTarea;
 	        }
 	    }
